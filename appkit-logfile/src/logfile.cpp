@@ -82,6 +82,46 @@ auto RotatingFileLog::rotate() -> std::pair<LogStatus, std::string> {
     return {LogStatus::IO_ERROR, "RotatingFileLog::rotate is not implemented"};
 }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 #else
 
 /// 历史文件路径：base.N（base 为当前日志文件，N 越大越旧）。
