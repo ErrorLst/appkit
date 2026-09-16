@@ -1,0 +1,6 @@
+# 编译数据库由顶层构建统一产出：appkit/build/compile_commands.json。
+# 两个模块共用这一份，所以子模块目录下不再放 .clangd。
+CompileFlags:
+  CompilationDatabase: build
+  # 去掉 -Werror / /WX：编辑器里把警告当错误会淹没真正的问题
+  Remove: [-Werror, /WX]
