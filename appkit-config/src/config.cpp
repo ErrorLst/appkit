@@ -7,7 +7,6 @@
 #include <string_view>
 #include <vector>
 
-// 交付态默认留桩（给候选人）。要看参考实现：注释掉下面这行。
 #define FLAG
 
 namespace appkit {
