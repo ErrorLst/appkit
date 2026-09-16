@@ -1,0 +1,23 @@
+# 白名单式（本模块自包含）：默认忽略一切，只放行本模块需要入库的内容。
+# 即使把这个目录单独抽出来，规则依然完整可用。
+
+*
+!*/
+
+!.gitignore
+!README.md
+!QUESTIONS.md
+!CMakeLists.txt
+!.clangd
+!.clang-format
+# 注意：.vscode/ 是编辑器本地配置，不入库。
+!*.h
+!*.cpp
+!config/*.ini
+!tests/data/*.ini
+
+# 构建产物与缓存
+build/
+build-*/
+out/
+.cache/
