@@ -26,18 +26,25 @@ static auto printQuoted(std::string_view text) -> void {
     std::cout << '"';
     for (const auto ch : text) {
         switch (ch) {
-            case '\n': std::cout << "\\n"; break;
-            case '\r': std::cout << "\\r"; break;
-            case '\t': std::cout << "\\t"; break;
-            default:   std::cout << ch;     break;
+        case '\n':
+            std::cout << "\\n";
+            break;
+        case '\r':
+            std::cout << "\\r";
+            break;
+        case '\t':
+            std::cout << "\\t";
+            break;
+        default:
+            std::cout << ch;
+            break;
         }
     }
     std::cout << '"';
 }
 
 /// 打印一个值：bool 打 true/false，字符串类加引号，其余直接输出。
-template <class T>
-static auto printValue(const T& value) -> void {
+template <class T> static auto printValue(const T &value) -> void {
     if constexpr (std::is_same_v<T, bool>) {
         std::cout << (value ? "true" : "false");
     } else if constexpr (std::is_convertible_v<T, std::string_view>) {
@@ -49,7 +56,7 @@ static auto printValue(const T& value) -> void {
 
 /// 打印一处 CHECK_EQ 失败：期望值 + 实际值。
 template <class A, class E>
-static auto reportMismatch(int line, const char* expr, const A& actual, const E& expected) -> void {
+static auto reportMismatch(int line, const char *expr, const A &actual, const E &expected) -> void {
     std::cout << "CHECK_EQ failed at line " << line << ": " << expr << '\n';
     std::cout << "    expected: ";
     printValue(expected);
@@ -61,15 +68,14 @@ static auto reportMismatch(int line, const char* expr, const A& actual, const E&
 }
 
 /// 断言 expand 失败；若它居然成功了，把实际返回的字符串打出来。
-static auto checkExpandFails(const appkit::Config& config, std::string_view section, std::string_view key,
-                             appkit::ConfigError& error, int line) -> void {
+static auto checkExpandFails(const appkit::Config &config, std::string_view section, std::string_view key,
+                             appkit::ConfigError &error, int line) -> void {
     error = appkit::ConfigError{};
     const auto result = config.expand(section, key, error);
     if (!result.has_value()) {
         return;
     }
-    std::cout << "CHECK_EXPAND_FAILS failed at line " << line << ": expand(\"" << section << "\", \"" << key
-              << "\")\n";
+    std::cout << "CHECK_EXPAND_FAILS failed at line " << line << ": expand(\"" << section << "\", \"" << key << "\")\n";
     std::cout << "    expected: failure (std::nullopt)\n";
     std::cout << "    actual:   success, returned ";
     printValue(*result);
@@ -92,23 +98,23 @@ static auto checkContains(std::string_view haystack, std::string_view needle, in
     ++g_failures;
 }
 
-#define CHECK_EQ(actual, expected)                                 \
-    do {                                                           \
-        const auto& actual_ = (actual);                            \
-        const auto& expected_ = (expected);                        \
-        if (!(actual_ == expected_)) {                             \
-            reportMismatch(__LINE__, #actual, actual_, expected_); \
-        }                                                          \
+#define CHECK_EQ(actual, expected)                                                                                     \
+    do {                                                                                                               \
+        const auto &actual_ = (actual);                                                                                \
+        const auto &expected_ = (expected);                                                                            \
+        if (!(actual_ == expected_)) {                                                                                 \
+            reportMismatch(__LINE__, #actual, actual_, expected_);                                                     \
+        }                                                                                                              \
     } while (false)
 
 // ------------------------------ 测试辅助 ------------------------------
 /// 取字符串值；缺失时返回空视图便于直接比较。
-static auto value(const appkit::Config& config, std::string_view section, std::string_view key) -> std::string_view {
+static auto value(const appkit::Config &config, std::string_view section, std::string_view key) -> std::string_view {
     return config.get(section, key).value_or(std::string_view{});
 }
 
 /// 以二进制读取整个文件；打开失败时打印错误行并计入失败。
-static auto readFile(const std::filesystem::path& path) -> std::string {
+static auto readFile(const std::filesystem::path &path) -> std::string {
     auto in = std::ifstream{path, std::ios::binary};
     if (!in) {
         std::cout << "CHECK failed: cannot read fixture " << path.string() << '\n';
@@ -119,7 +125,7 @@ static auto readFile(const std::filesystem::path& path) -> std::string {
 }
 
 /// 数据目录下某个 fixture 的完整路径。
-static auto dataPath(const char* name) -> std::filesystem::path {
+static auto dataPath(const char *name) -> std::filesystem::path {
     return std::filesystem::path{APPKIT_CONFIG_TEST_DATA_DIR} / name;
 }
 
@@ -129,8 +135,10 @@ static auto testParse() -> void {
     auto error = appkit::ConfigError{};
     const auto parsed = appkit::Config::parse(text, error);
     CHECK_EQ(parsed.has_value(), true);
-    if (!parsed) { return; }
-    const auto& config = *parsed;
+    if (!parsed) {
+        return;
+    }
+    const auto &config = *parsed;
     CHECK_EQ(config.size(), std::size_t{4});
     CHECK_EQ(value(config, "", "name"), std::string_view{"svcd"});
     CHECK_EQ(value(config, "", "spaced"), std::string_view{"trimmed"});
@@ -155,8 +163,10 @@ static auto testExpand() -> void {
     auto error = appkit::ConfigError{};
     const auto parsed = appkit::Config::parse(text, error);
     CHECK_EQ(parsed.has_value(), true);
-    if (!parsed) { return; }
-    const auto& config = *parsed;
+    if (!parsed) {
+        return;
+    }
+    const auto &config = *parsed;
     auto expand = appkit::ConfigError{};
     CHECK_EQ(config.expand("", "bin", expand).value_or(""), std::string{"/opt/svcd/bin"});
     CHECK_EQ(config.expand("", "deep", expand).value_or(""), std::string{"/opt/svcd/bin/deep"});
@@ -171,13 +181,15 @@ static auto testExpandErrors() -> void {
     auto error = appkit::ConfigError{};
     const auto parsed = appkit::Config::parse(text, error);
     CHECK_EQ(parsed.has_value(), true);
-    if (!parsed) { return; }
-    const auto& config = *parsed;
+    if (!parsed) {
+        return;
+    }
+    const auto &config = *parsed;
 
     auto cycle = appkit::ConfigError{};
     checkExpandFails(config, "", "a", cycle, __LINE__);
     CHECK_EQ(cycle.line, std::size_t{2});
-    CHECK_EQ(cycle.message.empty(), false);  // 文案不限，但必须给出可排障的说明
+    CHECK_EQ(cycle.message.empty(), false); // 文案不限，但必须给出可排障的说明
     checkExpandFails(config, "", "self", cycle, __LINE__);
     CHECK_EQ(cycle.line, std::size_t{3});
 
@@ -203,14 +215,16 @@ static auto testSvcdExample() -> void {
     auto error = appkit::ConfigError{};
     const auto parsed = appkit::Config::parse(text, error);
     CHECK_EQ(parsed.has_value(), true);
-    if (!parsed) { return; }
-    const auto& config = *parsed;
+    if (!parsed) {
+        return;
+    }
+    const auto &config = *parsed;
     CHECK_EQ(config.has("server", "listen"), true);
     CHECK_EQ(value(config, "log", "level"), std::string_view{"info"});
 }
 
 auto main() -> int {
-    std::cout << std::unitbuf;  // 每次输出立即刷新：调试时即使提前中断也能看到已产生的输出
+    std::cout << std::unitbuf; // 每次输出立即刷新：调试时即使提前中断也能看到已产生的输出
     testParse();
     testExpand();
     testExpandErrors();

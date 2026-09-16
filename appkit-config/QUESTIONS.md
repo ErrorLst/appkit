@@ -76,7 +76,7 @@ if (const auto it = std::ranges::find_if(config.m_entries, same); it != config.m
 
 ### Q6 所有权边界：三个签名为什么不一样
 
-位置：`include/appkit/config.h:28-33`、`:40-41`、`:51-52`
+位置：`include/appkit/config.h:27-32`、`:39-40`、`:49-50`
 
 ```cpp
 struct Entry { std::string section, key, value; std::size_t line; };  // 自己持有
@@ -92,7 +92,7 @@ struct Entry { std::string section, key, value; std::size_t line; };  // 自己�
 
 ### Q7 错误模型：为什么不用异常
 
-位置：`include/appkit/config.h:36-37`（实现 `src/config.cpp:27-71`）
+位置：`include/appkit/config.h:36`（实现 `src/config.cpp:27-71`）
 
 ```cpp
 [[nodiscard]] static auto parse(std::string_view text, ConfigError &error)
@@ -105,7 +105,7 @@ struct Entry { std::string section, key, value; std::size_t line; };  // 自己�
 
 ### Q8 不可变快照与线程安全
 
-位置：`include/appkit/config.h:40-52`（查询接口）、`:68-70`（`m_entries`）
+位置：`include/appkit/config.h:39-50`（查询接口）、`:65-66`（`m_entries`）
 
 1. 解析完成后不可变、查询全是 `const`：多个线程同时 `get` / `has` / `expand` 安全吗？为什么不用加锁？
 2. 如果给 `find` 加一个 `mutable` 的惰性缓存，会出现什么问题？
