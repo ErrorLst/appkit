@@ -19,13 +19,6 @@ endif()
 add_library(appkit_config STATIC src/config.cpp)
 target_include_directories(appkit_config PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# 交付态默认留桩由源码里的 #define FLAG 保证；这里只负责打开参考实现。
-# 要看参考实现：cmake -DAPPKIT_CONFIG_REFERENCE=ON
-option(APPKIT_CONFIG_REFERENCE "编译 Config::expand 的参考实现（默认留桩）" OFF)
-if(APPKIT_CONFIG_REFERENCE)
-    target_compile_definitions(appkit_config PRIVATE APPKIT_CONFIG_REFERENCE)
-endif()
-
 enable_testing()
 add_executable(config_test tests/config_test.cpp)
 target_link_libraries(config_test PRIVATE appkit_config)

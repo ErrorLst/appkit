@@ -19,13 +19,6 @@ endif()
 add_library(appkit_logfile STATIC src/logfile.cpp)
 target_include_directories(appkit_logfile PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# 交付态默认留桩由源码里的 #define FLAG 保证；这里只负责打开参考实现。
-# 要看参考实现：cmake -DAPPKIT_LOGFILE_REFERENCE=ON
-option(APPKIT_LOGFILE_REFERENCE "编译 RotatingFileLog::rotate 的参考实现（默认留桩）" OFF)
-if(APPKIT_LOGFILE_REFERENCE)
-    target_compile_definitions(appkit_logfile PRIVATE APPKIT_LOGFILE_REFERENCE)
-endif()
-
 enable_testing()
 add_executable(logfile_test tests/logfile_test.cpp)
 target_link_libraries(logfile_test PRIVATE appkit_logfile)
