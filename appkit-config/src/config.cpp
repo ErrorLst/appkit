@@ -87,6 +87,46 @@ auto Config::expand(std::string_view /*section*/, std::string_view /*key*/, Conf
     return std::nullopt;
 }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 #else
 
 /// 递归展开 entry 的值中的 ${...} 引用；active 是当前展开链，用于检测循环引用。

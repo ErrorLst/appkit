@@ -4,7 +4,7 @@
 
 ### Q1 换行符：只认 '\n'
 
-位置：`src/config.cpp:33`（相关：`:18`）
+位置：`src/config.cpp:29`（相关：`:14`）
 
 ```cpp
 const auto end = text.find('\n', begin);
@@ -16,7 +16,7 @@ const auto end = text.find('\n', begin);
 
 ### Q2 值两端的空白被裁掉了
 
-位置：`src/config.cpp:55`
+位置：`src/config.cpp:51`
 
 ```cpp
 const auto value = trim(line.substr(eq + 1));
@@ -29,7 +29,7 @@ const auto value = trim(line.substr(eq + 1));
 
 ### Q3 这行为什么不能省
 
-位置：`src/config.cpp:19-24`、`:34`
+位置：`src/config.cpp:15-20`、`:30`
 
 ```cpp
 if (first == std::string_view::npos) { return {}; }
@@ -46,7 +46,7 @@ const auto line = trim(text.substr(begin, end - begin));
 
 ### Q4 循环边界
 
-位置：`src/config.cpp:32-34`、`:65-68`
+位置：`src/config.cpp:28-30`、`:61-64`
 
 ```cpp
 while (begin <= text.size()) {
@@ -65,7 +65,7 @@ while (begin <= text.size()) {
 
 ### Q5 全表线性扫描
 
-位置：`src/config.cpp:57-58`（`get` 的查找在 `:74`）
+位置：`src/config.cpp:53-54`（`get` 的查找在 `:70`）
 
 ```cpp
 if (const auto it = std::ranges::find_if(config.m_entries, same); it != config.m_entries.end()) { ... }
@@ -92,7 +92,7 @@ struct Entry { std::string section, key, value; std::size_t line; };  // 自己�
 
 ### Q7 错误模型：为什么不用异常
 
-位置：`include/appkit/config.h:36`（实现 `src/config.cpp:27-71`）
+位置：`include/appkit/config.h:36`（实现 `src/config.cpp:23-67`）
 
 ```cpp
 [[nodiscard]] static auto parse(std::string_view text, ConfigError &error)
