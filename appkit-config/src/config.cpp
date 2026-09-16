@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace appkit {
 
@@ -77,6 +78,7 @@ auto Config::has(std::string_view section, std::string_view key) const noexcept 
 }
 
 auto Config::size() const noexcept -> std::size_t { return m_entries.size(); }
+#ifdef FLAG
 
 auto Config::expand(std::string_view /*section*/, std::string_view /*key*/, ConfigError &error) const
     -> std::optional<std::string> {
@@ -84,5 +86,68 @@ auto Config::expand(std::string_view /*section*/, std::string_view /*key*/, Conf
     error = ConfigError{0, "Config::expand is not implemented"};
     return std::nullopt;
 }
+
+#else
+
+/// 递归展开 entry 的值中的 ${...} 引用；active 是当前展开链，用于检测循环引用。
+static auto resolveRef(const Config &config, const Config::Entry &entry, std::vector<const Config::Entry *> &active)
+    -> std::optional<std::string> {
+    auto expanded = std::string{};
+    auto content = std::string_view{entry.value};
+    while (!content.empty()) {
+        const auto dollar = content.find('$');
+        if (dollar == std::string_view::npos) {
+            expanded.append(content);
+            break;
+        }
+        expanded.append(content.substr(0, dollar));
+
+        const auto rest = content.substr(dollar);
+        const auto brace_end = rest.find('}');
+        if (rest.size() < 2 || rest[1] != '{' || brace_end == std::string_view::npos) {
+            return std::nullopt;
+        }
+        const auto name = rest.substr(2, brace_end - 2);
+        content = rest.substr(brace_end + 1);
+
+        auto section = std::string_view{entry.section};
+        auto key = name;
+        if (const auto dot = name.find('.'); dot != std::string_view::npos) {
+            section = name.substr(0, dot);
+            key = name.substr(dot + 1);
+            if (section.empty() || key.empty()) {
+                return std::nullopt;
+            }
+        }
+
+        const auto *target = config.find(section, key);
+        if (target == nullptr) {
+            return std::nullopt;
+        }
+        if (std::ranges::find(active, target) != active.end()) {
+            return std::nullopt;
+        }
+        active.push_back(target);
+        const auto value = resolveRef(config, *target, active);
+        active.pop_back();
+        if (!value) {
+            return std::nullopt;
+        }
+        expanded.append(*value);
+    }
+    return expanded;
+}
+
+auto Config::expand(std::string_view section, std::string_view key, ConfigError &) const -> std::optional<std::string> {
+    auto entry = find(section, key);
+    if (!entry) {
+        return std::nullopt;
+    }
+    auto active = std::vector<const Config::Entry *>{};
+    active.push_back(entry);
+    return resolveRef(*this, *entry, active);
+}
+
+#endif
 
 } // namespace appkit
