@@ -19,6 +19,13 @@ endif()
 add_library(appkit_config STATIC src/config.cpp)
 target_include_directories(appkit_config PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# 交付态默认留桩：给库定义 FLAG，让 src/config.cpp 里的 #ifdef FLAG 分支生效。
+# 想看 expand 的参考实现：cmake -DAPPKIT_CONFIG_REFERENCE=ON
+option(APPKIT_CONFIG_REFERENCE "编译 Config::expand 的参考实现（关闭则留桩）" OFF)
+if(NOT APPKIT_CONFIG_REFERENCE)
+    target_compile_definitions(appkit_config PRIVATE FLAG)
+endif()
+
 enable_testing()
 add_executable(config_test tests/config_test.cpp)
 target_link_libraries(config_test PRIVATE appkit_config)
