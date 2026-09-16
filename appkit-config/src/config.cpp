@@ -7,6 +7,12 @@
 #include <string_view>
 #include <vector>
 
+// 交付态默认留桩（给候选人）。要看参考实现：注释掉下面这行，或加 -DAPPKIT_CONFIG_REFERENCE=ON 构建。
+#define FLAG
+#ifdef APPKIT_CONFIG_REFERENCE
+#undef FLAG
+#endif
+
 namespace appkit {
 
 /// 裁剪首尾空白；全空白返回空视图。

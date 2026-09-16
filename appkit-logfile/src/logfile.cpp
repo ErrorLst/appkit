@@ -6,6 +6,12 @@
 #include <system_error>
 #include <utility>
 
+// 交付态默认留桩（给候选人）。要看参考实现：注释掉下面这行，或加 -DAPPKIT_LOGFILE_REFERENCE=ON 构建。
+#define FLAG
+#ifdef APPKIT_LOGFILE_REFERENCE
+#undef FLAG
+#endif
+
 namespace appkit {
 
 auto RotatingFileLog::open(Options options) -> std::pair<LogStatus, std::string> {
